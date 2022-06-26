@@ -2,39 +2,39 @@
 session_start();
 error_reporting(0);
 include('includes/config.php');
-
-if(isset($_POST['change']))
-{
-   $email=$_POST['email'];
-    $contact=$_POST['contact'];
-    $password=md5($_POST['password']);
-$query=mysqli_query($con,"SELECT * FROM users WHERE email='$email' and contactno='$contact'");
-$num=mysqli_fetch_array($query);
-if($num>0)
-{
-$extra="forgot-password.php";
-mysqli_query($con,"update users set password='$password' WHERE email='$email' and contactno='$contact' ");
-$host=$_SERVER['HTTP_HOST'];
-$uri=rtrim(dirname($_SERVER['PHP_SELF']),'/\\');
-header("location:http://$host$uri/$extra");
-$_SESSION['errmsg']="Password Changed Successfully";
-exit();
+if(strlen($_SESSION['login'])==0)
+    {   
+header('location:login.php');
 }
-else
+else{
+// Code forProduct deletion from  wishlist	
+$wid=intval($_GET['del']);
+if(isset($_GET['del']))
 {
-$extra="forgot-password.php";
-$host  = $_SERVER['HTTP_HOST'];
-$uri  = rtrim(dirname($_SERVER['PHP_SELF']),'/\\');
-header("location:http://$host$uri/$extra");
-$_SESSION['errmsg']="Invalid email id or Contact no";
-exit();
-}
+$query=mysqli_query($con,"delete from wishlist where id='$wid'");
 }
 
+
+if(isset($_GET['action']) && $_GET['action']=="add"){
+	$id=intval($_GET['id']);
+	$query=mysqli_query($con,"delete from wishlist where productId='$id'");
+	if(isset($_SESSION['cart'][$id])){
+		$_SESSION['cart'][$id]['quantity']++;
+	}else{
+		$sql_p="SELECT * FROM products WHERE id={$id}";
+		$query_p=mysqli_query($con,$sql_p);
+		if(mysqli_num_rows($query_p)!=0){
+			$row_p=mysqli_fetch_array($query_p);
+			$_SESSION['cart'][$row_p['id']]=array("quantity" => 1, "price" => $row_p['productPrice']);	
+header('location:my-wishlist.php');
+}
+		else{
+			$message="Product ID is invalid";
+		}
+	}
+}
 
 ?>
-
-
 <!DOCTYPE html>
 <html lang="en">
 	<head>
@@ -47,9 +47,7 @@ exit();
 	    <meta name="keywords" content="MediaCenter, Template, eCommerce">
 	    <meta name="robots" content="all">
 
-	    <title>Shopping Portal | Forgot Password</title>
-
-	    <!-- Bootstrap Core CSS -->
+	    <title>My Wishlist</title>
 	    <link rel="stylesheet" href="assets/css/bootstrap.min.css">
 	    
 	    <!-- Customizable CSS -->
@@ -79,27 +77,9 @@ exit();
 
         <!-- Fonts --> 
 		<link href='http://fonts.googleapis.com/css?family=Roboto:300,400,500,700' rel='stylesheet' type='text/css'>
-		
-		<!-- Favicon -->
 		<link rel="shortcut icon" href="assets/images/favicon.ico">
-<script type="text/javascript">
-function valid()
-{
- if(document.register.password.value!= document.register.confirmpassword.value)
-{
-alert("Password and Confirm Password Field do not match  !!");
-document.register.confirmpassword.focus();
-return false;
-}
-return true;
-}
-</script>
 	</head>
     <body class="cnt-home">
-	
-		
-	
-		<!-- ============================================== HEADER ============================================== -->
 <header class="header-style-1">
 
 	<!-- ============================================== TOP MENU ============================================== -->
@@ -118,7 +98,7 @@ return true;
 		<div class="breadcrumb-inner">
 			<ul class="list-inline list-unstyled">
 				<li><a href="home.html">Trang chủ</a></li>
-				<li class='active'>Quên mật khẩu</li>
+				<li class='active'>Danh sách yêu thích</li>
 			</ul>
 		</div><!-- /.breadcrumb-inner -->
 	</div><!-- /.container -->
@@ -126,52 +106,72 @@ return true;
 
 <div class="body-content outer-top-bd">
 	<div class="container">
-		<div class="sign-in-page inner-bottom-sm">
+		<div class="my-wishlist-page inner-bottom-sm">
 			<div class="row">
-				<!-- Sign-in -->			
-<div class="col-md-6 col-sm-6 sign-in">
-	<h4 class="">Quên mật khẩu</h4>
-	<form class="register-form outer-top-xs" name="register" method="post">
-	<span style="color:red;" >
+				<div class="col-md-12 my-wishlist">
+	<div class="table-responsive">
+		<table class="table">
+			<thead>
+				<tr>
+					<th colspan="4">Danh sách yêu thích của tôi</th>
+				</tr>
+			</thead>
+			<tbody>
 <?php
-echo htmlentities($_SESSION['errmsg']);
+$ret=mysqli_query($con,"select products.productName as pname,products.productName as proid,products.productImage1 as pimage,products.productPrice as pprice,wishlist.productId as pid,wishlist.id as wid from wishlist join products on products.id=wishlist.productId where wishlist.userId='".$_SESSION['id']."'");
+$num=mysqli_num_rows($ret);
+	if($num>0)
+	{
+while ($row=mysqli_fetch_array($ret)) {
+
 ?>
-<?php
-echo htmlentities($_SESSION['errmsg']="");
+
+				<tr>
+					<td class="col-md-2"><img src="admin/productimages/<?php echo htmlentities($row['pid']);?>/<?php echo htmlentities($row['pimage']);?>" alt="<?php echo htmlentities($row['pname']);?>" width="60" height="100"></td>
+					<td class="col-md-6">
+						<div class="product-name"><a href="product-details.php?pid=<?php echo htmlentities($pd=$row['pid']);?>"><?php echo htmlentities($row['pname']);?></a></div>
+<?php $rt=mysqli_query($con,"select * from productreviews where productId='$pd'");
+$num=mysqli_num_rows($rt);
+{
 ?>
-	</span>
-		<div class="form-group">
-		    <label class="info-title" for="exampleInputEmail1">Địa chỉ email <span>*</span></label>
-		    <input type="email" name="email" class="form-control unicase-form-control text-input" id="exampleInputEmail1" required >
-		</div>
-	  	<div class="form-group">
-		    <label class="info-title" for="exampleInputPassword1">Liên hệ với <span>*</span></label>
-		 <input type="text" name="contact" class="form-control unicase-form-control text-input" id="contact" required>
-		</div>
-<div class="form-group">
-	    	<label class="info-title" for="password">Mật khẩu. <span>*</span></label>
-	    	<input type="password" class="form-control unicase-form-control text-input" id="password" name="password"  required >
-	  	</div>
 
-<div class="form-group">
-	    	<label class="info-title" for="confirmpassword">Nhập lại mật khẩu. <span>*</span></label>
-	    	<input type="password" class="form-control unicase-form-control text-input" id="confirmpassword" name="confirmpassword" required >
-	  	</div>
+						<div class="rating">
+							<i class="fa fa-star rate"></i>
+							<i class="fa fa-star rate"></i>
+							<i class="fa fa-star rate"></i>
+							<i class="fa fa-star rate"></i>
+							<i class="fa fa-star non-rate"></i>
+							<span class="review">( <?php echo htmlentities($num);?> Reviews )</span>
+						</div>
+						<?php } ?>
+						<div class="price">Rs. 
+							<?php echo htmlentities($row['pprice']);?>.00
+							<span>$900.00</span>
+						</div>
+					</td>
+					<td class="col-md-2">
+						<a href="my-wishlist.php?page=product&action=add&id=<?php echo $row['pid']; ?>" class="btn-upper btn btn-primary">Add to cart</a>
+					</td>
+					<td class="col-md-2 close-btn">
+						<a href="my-wishlist.php?del=<?php echo htmlentities($row['wid']);?>" onClick="return confirm('Are you sure you want to delete?')" class=""><i class="fa fa-times"></i></a>
+					</td>
+				</tr>
+				<?php } } else{ ?>
+				<tr>
+					<td style="font-size: 18px; font-weight:bold ">Danh sách mong muốn của bạn đang trống</td>
 
-
-		
-	  	<button type="submit" class="btn-upper btn btn-primary checkout-page-button" name="change">Thay đổi </button>
-	</form>					
-</div>
-<!-- Sign-in -->
-
-
-<!-- create a new account -->			</div><!-- /.row -->
-		</div>
-<?php include('includes/brands-slider.php');?>
+				</tr>
+				<?php } ?>
+			</tbody>
+		</table>
+	</div>
+</div>			</div><!-- /.row -->
+		</div><!-- /.sigin-in-->
+	<?php include('includes/brands-slider.php');?>
 </div>
 </div>
 <?php include('includes/footer.php');?>
+
 	<script src="assets/js/jquery-1.11.1.min.js"></script>
 	
 	<script src="assets/js/bootstrap.min.js"></script>
@@ -205,9 +205,6 @@ echo htmlentities($_SESSION['errmsg']="");
 		   $('.show-theme-options').delay(2000).trigger('click');
 		});
 	</script>
-	<!-- For demo purposes – can be removed on production : End -->
-
-	
-
 </body>
 </html>
+<?php } ?>

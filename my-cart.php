@@ -273,7 +273,7 @@ $_SESSION['pid']=$pdtid;
 		<thead>
 			<tr>
 				<th>
-					<span class="estimate-title">Thanh toán </span>
+					<span class="estimate-title">Người thanh toán </span>
 				</th>
 			</tr>
 		</thead>
@@ -288,22 +288,22 @@ while($row=mysqli_fetch_array($query))
 ?>
 
 <div class="form-group">
-					    <label class="info-title" for="Billing Address">Thanh toán (COD,ATM)<span>*</span></label>
+					    <label class="info-title" for="Billing Address">Địa chỉ thanh toán<span>*</span></label>
 					    <textarea class="form-control unicase-form-control text-input"  name="billingaddress" required="required"><?php echo $row['billingAddress'];?></textarea>
 					  </div>
 
 
 
 						<div class="form-group">
-					    <label class="info-title" for="Billing State ">Ngân hàng  <span>*</span></label>
+					    <label class="info-title" for="Billing State ">Thành phố  <span>*</span></label>
 			 <input type="text" class="form-control unicase-form-control text-input" id="bilingstate" name="bilingstate" value="<?php echo $row['billingState'];?>" required>
 					  </div>
 					  <div class="form-group">
-					    <label class="info-title" for="Billing City">Số tài khoản <span>*</span></label>
+					    <label class="info-title" for="Billing City">Số điện thoại <span>*</span></label>
 					    <input type="text" class="form-control unicase-form-control text-input" id="billingcity" name="billingcity" required="required" value="<?php echo $row['billingCity'];?>" >
 					  </div>
  <div class="form-group">
-					    <label class="info-title" for="Billing Pincode">Tên chủ tài khoản  <span>*</span></label>
+					    <label class="info-title" for="Billing Pincode">Tên người gửi  <span>*</span></label>
 					    <input type="text" class="form-control unicase-form-control text-input" id="billingpincode" name="billingpincode" required="required" value="<?php echo $row['billingPincode'];?>" >
 					  </div>
 
@@ -325,7 +325,7 @@ while($row=mysqli_fetch_array($query))
 		<thead>
 			<tr>
 				<th>
-					<span class="estimate-title">Địa chỉ thanh toán</span>
+					<span class="estimate-title">Địa chỉ nhận hàng</span>
 				</th>
 			</tr>
 		</thead>

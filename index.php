@@ -36,7 +36,7 @@ if(isset($_GET['action']) && $_GET['action']=="add"){
 	    <meta name="keywords" content="MediaCenter, Template, eCommerce">
 	    <meta name="robots" content="all">
         
-	    <title>Shopping K19 Home Page </title>
+	    <title>Shopping Portal Home Page </title>
 
 	    <!-- Bootstrap Core CSS -->
 	    <link rel="stylesheet" href="assets/css/bootstrap.min.css">
@@ -172,8 +172,7 @@ if(isset($_GET['action']) && $_GET['action']=="add"){
 					<li class="active"><a href="#all" data-toggle="tab">Tất cả</a></li>
 					<li><a href="#books" data-toggle="tab">Sách</a></li>
 					<li><a href="#furniture" data-toggle="tab">Đồ nột thất</a></li>
-				
-				</ul><!-- /.nav-tabs --
+				</ul><!-- /.nav-tabs -->
 			</div>
 
 			<div class="tab-content outer-top-xs">
